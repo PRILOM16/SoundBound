@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SoundBound - Каталог</title>
+  </head>
+  <body>
+    <h1>Музыкальный каталог</h1>
+    <hr />
+
+    <ul>
+      {% for song in songs %}
+      <li>
+        <strong>{{ song.artist }} - {{ song.title }}</strong>
+        ({{song.year}})<br />
+        Цена: {{ song.price }} руб.
+        <audio
+          controls
+          src="{{ song.demo_audio.url }}"
+          style="margin-top: 10px"
+        ></audio>
+      </li>
+      <br />
+      {% endfor %}
+    </ul>
+  </body>
+</html>
