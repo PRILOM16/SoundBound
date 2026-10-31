@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'catalog',
     'billing',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -128,3 +129,6 @@ MEDIA_URL = '/media/'
 
 # Физический путь к папке media на компьютере
 MEDIA_ROOT = BASE_DIR / 'media'
+
+LOGIN_REDIRECT_URL = '/'  # После логина кидаем на главную (в каталог)
+LOGOUT_REDIRECT_URL = '/' # После выхода тоже кидаем на главную

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Моя библиотека - SoundBound</title>
+  </head>
+  <body>
+    <!-- НАВИГАЦИЯ (Один раз, в самом верху) -->
+    <div style="text-align: right; margin-bottom: 20px">
+      <p>
+        Привет, <strong>{{ user.username }}</strong>!
+        <a href="{% url 'catalog' %}" style="text-decoration: none">
+          <button
+            type="button"
+            style="padding: 5px 15px; margin-left: 10px; cursor: pointer"
+          >
+            Вернуться в каталог
+          </button>
+        </a>
+        <a href="{% url 'accounts:logout' %}" style="text-decoration: none">
+          <button
+            type="button"
+            style="padding: 5px 15px; margin-left: 5px; cursor: pointer"
+          >
+            Выйти
+          </button>
+        </a>
+      </p>
+    </div>
+
+    <h1>Моя музыкальная библиотека</h1>
+    <hr />
+
+    <!-- СПИСОК КУПЛЕННЫХ ПЕСЕН -->
+    {% if songs %}
+    <ul>
+      {% for song in songs %}
+      <li>
+        <strong>{{ song.artist }} - {{ song.title }}</strong>
+        ({{song.year}})<br />
+        <audio
+          controls
+          src="{{ song.demo_audio.url }}"
+          style="margin-top: 10px"
+        ></audio>
+      </li>
+      <br />
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>
+      Ваша библиотека пока пуста.
+      <a href="{% url 'catalog' %}">Пора за покупками!</a>
+    </p>
+    {% endif %}
+  </body>
+</html>

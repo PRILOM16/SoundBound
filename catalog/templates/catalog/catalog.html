@@ -6,23 +6,96 @@
     <title>SoundBound - Каталог</title>
   </head>
   <body>
-    <h1>Музыкальный каталог</h1>
-    <hr />
+    <header>
+      <div
+        style="
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          margin-bottom: 20px;
+        "
+      >
+        {% if user.is_authenticated %}
+        <span style="margin-right: 15px"
+          >Привет, <strong>{{ user.username }}</strong>!</span
+        >
 
-    <ul>
-      {% for song in songs %}
-      <li>
-        <strong>{{ song.artist }} - {{ song.title }}</strong>
-        ({{song.year}})<br />
-        Цена: {{ song.price }} руб.
-        <audio
-          controls
-          src="{{ song.demo_audio.url }}"
-          style="margin-top: 10px"
-        ></audio>
-      </li>
-      <br />
-      {% endfor %}
-    </ul>
+        <!-- Кнопка перехода в библиотеку -->
+        <a
+          href="{% url 'my_library' %}"
+          style="text-decoration: none; margin-right: 5px"
+        >
+          <button type="button" style="padding: 5px 15px; cursor: pointer">
+            Моя библиотека 🎵
+          </button>
+        </a>
+
+        <!-- Кнопка выхода -->
+        <form
+          action="{% url 'accounts:logout' %}"
+          method="POST"
+          style="margin: 0"
+        >
+          {% csrf_token %}
+          <button type="submit" style="padding: 5px 15px; cursor: pointer">
+            Выйти
+          </button>
+        </form>
+
+        {% else %}
+        <a href="{% url 'accounts:login' %}" style="margin-right: 5px"
+          ><button type="button">Войти</button></a
+        >
+        <a href="{% url 'accounts:register' %}"
+          ><button type="button">Регистрация</button></a
+        >
+        {% endif %}
+      </div>
+    </header>
+
+    <main>
+      <h1>Музыкальный каталог</h1>
+      <hr />
+
+      <ul>
+        {% for song in songs %}
+        <li>
+          <strong>{{ song.artist }} - {{ song.title }}</strong>
+          ({{song.year}})<br />
+          Цена: {{ song.price }} руб.
+          <audio
+            controls
+            src="{{ song.demo_audio.url }}"
+            style="margin-top: 10px"
+          ></audio>
+
+          <!-- КНОПКА ПОКУПКИ: Показываем форму только если юзер вошел в систему -->
+          {% if user.is_authenticated %} {% if song.id in purchased_song_ids %}
+          <p style="color: green; margin-top: 10px">
+            <strong>✓ Уже в библиотеке</strong>
+          </p>
+          {% else %}
+          <form
+            action="{% url 'billing:buy_song' song.id %}"
+            method="POST"
+            style="margin-top: 10px"
+          >
+            {% csrf_token %}
+            <button type="submit">Купить трек</button>
+          </form>
+          {% endif %} {% else %}
+          <!-- Гостям предлагаем войти -->
+          <p style="margin-top: 10px; color: gray">
+            <em
+              >Чтобы купить трек,
+              <a href="{% url 'accounts:login' %}">войдите в аккаунт</a>.</em
+            >
+          </p>
+          {% endif %}
+        </li>
+        <br />
+        {% endfor %}
+      </ul>
+    </main>
   </body>
 </html>
