@@ -4,7 +4,7 @@ from billing.models import Purchase
 from django.contrib.auth.decorators import login_required
 
 def song_catalog(request):
-    songs = Song.objects.all()
+    songs = Song.objects.filter(deleted_at__isnull=True)
     purchased_song_ids = []
 
     if request.user.is_authenticated:
@@ -15,10 +15,10 @@ def song_catalog(request):
 
 @login_required(login_url='/accounts/login/')
 def my_library(request):
-    # Достаем все чеки текущего пользователя
-    user_purchases = Purchase.objects.filter(user=request.user)
-    # Вытаскиваем из чеков сами объекты песен
-    purchased_songs = [purchase.song for purchase in user_purchases]
-    
-    return render(request, 'catalog/library.html', {'songs': purchased_songs})
+    # Получаем все покупки текущего пользователя
+    purchases = Purchase.objects.filter(user=request.user).select_related('song')
+
+    return render(request, 'catalog/library.html', {
+        'purchases': purchases
+    })
 

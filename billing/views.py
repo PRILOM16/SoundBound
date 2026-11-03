@@ -6,10 +6,11 @@ from catalog.models import Song
 @login_required
 def buy_song(request, song_id):
     if request.method == 'POST':
-        song = get_object_or_404(Song, id = song_id)
+        song = get_object_or_404(Song, id = song_id, deleted_at_isnull = True)
 
         Purchase.objects.create(user=request.user, song=song)
 
         return redirect('catalog')
 
     return redirect('catalog')
+ 

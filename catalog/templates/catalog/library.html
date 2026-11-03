@@ -1,57 +1,92 @@
-<!doctype html>
-<html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Моя библиотека - SoundBound</title>
-  </head>
-  <body>
-    <!-- НАВИГАЦИЯ (Один раз, в самом верху) -->
-    <div style="text-align: right; margin-bottom: 20px">
-      <p>
-        Привет, <strong>{{ user.username }}</strong>!
-        <a href="{% url 'catalog' %}" style="text-decoration: none">
-          <button
-            type="button"
-            style="padding: 5px 15px; margin-left: 10px; cursor: pointer"
-          >
-            Вернуться в каталог
-          </button>
-        </a>
-        <a href="{% url 'accounts:logout' %}" style="text-decoration: none">
-          <button
-            type="button"
-            style="padding: 5px 15px; margin-left: 5px; cursor: pointer"
-          >
-            Выйти
-          </button>
-        </a>
+{% extends 'catalog/base.html' %} {% block title %}SoundBound — Моя библиотека
+{%endblock %} {% block content %}
+
+<div class="w-full">
+  <!-- Заголовок страницы -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Моя библиотека</h1>
+
+    <p class="text-gray-600 mt-2">
+      Здесь находятся все приобретённые тобой композиции.
+    </p>
+  </div>
+
+  <!-- Список композиций -->
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    {% for purchase in purchases %}
+
+    <div
+      class="song-card bg-white rounded-xl shadow-md p-6"
+      data-title="{{ purchase.song.title|lower|escape }}"
+      data-artist="{{ purchase.song.artist|lower|escape }}"
+    >
+      <!-- Название композиции -->
+      {% if purchase.song.demo_audio %}
+
+      <h2
+        class="text-xl font-semibold text-gray-900 cursor-pointer hover:text-blue-600"
+        onclick="playSong(this)"
+        data-audio="{{ purchase.song.demo_audio.url|escape }}"
+        data-title="{{ purchase.song.title|escape }}"
+        data-artist="{{ purchase.song.artist|escape }}"
+      >
+        {{ purchase.song.title }}
+      </h2>
+
+      {% else %}
+
+      <h2 class="text-xl font-semibold text-gray-900">
+        {{ purchase.song.title }}
+      </h2>
+
+      {% endif %}
+
+      <!-- Исполнитель -->
+      <p class="text-gray-600 mt-2">{{ purchase.song.artist }}</p>
+
+      <!-- Год выпуска -->
+      <p class="text-sm text-gray-500 mt-1">
+        Год выпуска: {{ purchase.song.year }}
       </p>
+
+      <!-- Цена -->
+      <p class="text-lg font-bold text-gray-900 mt-4">
+        {{ purchase.song.price }} ₽
+      </p>
+
+      <!-- Дата покупки -->
+      <p class="text-sm text-gray-500 mt-2">
+        Куплено: {{ purchase.purchase_date|date:"d.m.Y" }}
+      </p>
+
+      <!-- Статус -->
+      <div class="mt-4">
+        <span
+          class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm"
+        >
+          В библиотеке
+        </span>
+      </div>
     </div>
 
-    <h1>Моя музыкальная библиотека</h1>
-    <hr />
+    {% empty %}
 
-    <!-- СПИСОК КУПЛЕННЫХ ПЕСЕН -->
-    {% if songs %}
-    <ul>
-      {% for song in songs %}
-      <li>
-        <strong>{{ song.artist }} - {{ song.title }}</strong>
-        ({{song.year}})<br />
-        <audio
-          controls
-          src="{{ song.demo_audio.url }}"
-          style="margin-top: 10px"
-        ></audio>
-      </li>
-      <br />
-      {% endfor %}
-    </ul>
-    {% else %}
-    <p>
-      Ваша библиотека пока пуста.
-      <a href="{% url 'catalog' %}">Пора за покупками!</a>
-    </p>
-    {% endif %}
-  </body>
-</html>
+    <!-- Пустая библиотека -->
+    <div class="col-span-full bg-white rounded-xl shadow-md p-10 text-center">
+      <h2 class="text-xl font-semibold text-gray-800">Библиотека пока пуста</h2>
+
+      <p class="text-gray-500 mt-2">Здесь появятся композиции после покупки.</p>
+
+      <a
+        href="{% url 'catalog' %}"
+        class="inline-block mt-5 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition"
+      >
+        Перейти в каталог
+      </a>
+    </div>
+
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

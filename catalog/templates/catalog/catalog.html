@@ -1,101 +1,138 @@
-<!doctype html>
-<html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SoundBound - Каталог</title>
-  </head>
-  <body>
-    <header>
-      <div
-        style="
-          display: flex;
-          justify-content: flex-end;
-          align-items: center;
-          margin-bottom: 20px;
-        "
+{% extends 'catalog/base.html' %} {% block title %}SoundBound — Музыкальный
+каталог{% endblock %} {% block content %}
+
+<!-- Заголовок каталога -->
+<div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-3xl font-bold">Музыкальный каталог</h1>
+
+    <p class="text-gray-500 mt-2">
+      Открывай новую музыку и пополняй свою коллекцию.
+    </p>
+  </div>
+
+  {% if user.is_authenticated and user.is_staff %}
+  <a
+    href="#"
+    class="px-5 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition shadow-sm"
+  >
+    + Добавить композицию
+  </a>
+  {% endif %}
+</div>
+
+<!-- Список композиций -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+  {% for song in songs %}
+
+  <div
+    class="song-card bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col"
+    data-title="{{ song.title|escape }}"
+    data-artist="{{ song.artist|escape }}"
+  >
+    <!-- Информация о композиции -->
+    <div class="mb-5">
+      {% if song.demo_audio %}
+
+      <h2
+        class="text-xl font-bold text-gray-900 cursor-pointer hover:text-blue-600 transition"
+        onclick="playSong(this)"
+        data-audio="{{ song.demo_audio.url|escape }}"
+        data-title="{{ song.title|escape }}"
+        data-artist="{{ song.artist|escape }}"
       >
-        {% if user.is_authenticated %}
-        <span style="margin-right: 15px"
-          >Привет, <strong>{{ user.username }}</strong>!</span
-        >
+        {{ song.title }}
+      </h2>
 
-        <!-- Кнопка перехода в библиотеку -->
-        <a
-          href="{% url 'my_library' %}"
-          style="text-decoration: none; margin-right: 5px"
-        >
-          <button type="button" style="padding: 5px 15px; cursor: pointer">
-            Моя библиотека 🎵
-          </button>
-        </a>
+      {% else %}
 
-        <!-- Кнопка выхода -->
-        <form
-          action="{% url 'accounts:logout' %}"
-          method="POST"
-          style="margin: 0"
-        >
-          {% csrf_token %}
-          <button type="submit" style="padding: 5px 15px; cursor: pointer">
-            Выйти
-          </button>
-        </form>
+      <h2 class="text-xl font-bold text-gray-900">{{ song.title }}</h2>
 
-        {% else %}
-        <a href="{% url 'accounts:login' %}" style="margin-right: 5px"
-          ><button type="button">Войти</button></a
+      {% endif %}
+
+      <p class="text-gray-500 mt-1">{{ song.artist }}</p>
+
+      <p class="text-sm text-gray-400 mt-2">{{ song.year }}</p>
+    </div>
+
+    <!-- Цена -->
+    <div class="mb-5">
+      <span class="text-sm text-gray-500"> Стоимость </span>
+
+      <p class="text-2xl font-bold text-gray-900">{{ song.price }} ₽</p>
+    </div>
+
+    <!-- Действия администратора -->
+    {% if user.is_authenticated and user.is_staff %}
+
+    <div class="flex gap-3 mb-5 pb-5 border-b border-gray-100">
+      <a href="#" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+        Редактировать
+      </a>
+
+      <form method="POST" action="#">
+        {% csrf_token %}
+
+        <button
+          type="submit"
+          class="text-sm text-red-600 hover:text-red-800 font-medium"
         >
-        <a href="{% url 'accounts:register' %}"
-          ><button type="button">Регистрация</button></a
-        >
-        {% endif %}
+          Удалить
+        </button>
+      </form>
+    </div>
+
+    {% endif %}
+
+    <!-- Покупка -->
+    <div class="mt-auto">
+      {% if user.is_authenticated %} {% if song.id in purchased_song_ids %}
+
+      <div
+        class="w-full text-center py-3 rounded-lg bg-green-50 text-green-700 font-medium"
+      >
+        ✓ Уже в библиотеке
       </div>
-    </header>
 
-    <main>
-      <h1>Музыкальный каталог</h1>
-      <hr />
+      {% else %}
 
-      <ul>
-        {% for song in songs %}
-        <li>
-          <strong>{{ song.artist }} - {{ song.title }}</strong>
-          ({{song.year}})<br />
-          Цена: {{ song.price }} руб.
-          <audio
-            controls
-            src="{{ song.demo_audio.url }}"
-            style="margin-top: 10px"
-          ></audio>
+      <form action="{% url 'billing:buy_song' song.id %}" method="POST">
+        {% csrf_token %}
 
-          <!-- КНОПКА ПОКУПКИ: Показываем форму только если юзер вошел в систему -->
-          {% if user.is_authenticated %} {% if song.id in purchased_song_ids %}
-          <p style="color: green; margin-top: 10px">
-            <strong>✓ Уже в библиотеке</strong>
-          </p>
-          {% else %}
-          <form
-            action="{% url 'billing:buy_song' song.id %}"
-            method="POST"
-            style="margin-top: 10px"
-          >
-            {% csrf_token %}
-            <button type="submit">Купить трек</button>
-          </form>
-          {% endif %} {% else %}
-          <!-- Гостям предлагаем войти -->
-          <p style="margin-top: 10px; color: gray">
-            <em
-              >Чтобы купить трек,
-              <a href="{% url 'accounts:login' %}">войдите в аккаунт</a>.</em
-            >
-          </p>
-          {% endif %}
-        </li>
-        <br />
-        {% endfor %}
-      </ul>
-    </main>
-  </body>
-</html>
+        <button
+          type="submit"
+          class="w-full py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+        >
+          Купить трек
+        </button>
+      </form>
+
+      {% endif %} {% else %}
+
+      <div class="text-center p-3 rounded-lg bg-gray-50 text-sm text-gray-500">
+        Чтобы купить трек,
+
+        <a
+          href="{% url 'accounts:login' %}"
+          class="text-blue-600 hover:underline font-medium"
+        >
+          войдите в аккаунт </a
+        >.
+      </div>
+
+      {% endif %}
+    </div>
+  </div>
+
+  {% empty %}
+
+  <div class="col-span-full bg-white rounded-xl p-10 text-center shadow-sm">
+    <h2 class="text-xl font-semibold mb-2">Каталог пока пуст</h2>
+
+    <p class="text-gray-500">Скоро здесь появятся новые композиции.</p>
+  </div>
+
+  {% endfor %}
+</div>
+
+{% endblock %}

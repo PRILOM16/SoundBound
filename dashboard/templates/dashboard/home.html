@@ -1,0 +1,100 @@
+{% extends 'dashboard/base.html' %} {% block title %}Главная — SoundBound
+Dashboard{% endblock %} {% block content %}
+
+<!-- Заголовок -->
+<div class="mb-8">
+  <h1 class="text-3xl font-bold mb-2">Панель управления</h1>
+  <p class="text-gray-500">Обзор музыкального магазина SoundBound</p>
+</div>
+
+<!-- Статистика -->
+<section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+  <div class="bg-white rounded-xl p-6 shadow-sm">
+    <p class="text-gray-500 text-sm">Всего композиций</p>
+    <h2 class="text-3xl font-bold mt-2">{{ songs_count }}</h2>
+  </div>
+
+  <div class="bg-white rounded-xl p-6 shadow-sm">
+    <p class="text-gray-500 text-sm">Пользователи</p>
+    <h2 class="text-3xl font-bold mt-2">{{ users_count }}</h2>
+  </div>
+
+  <div class="bg-white rounded-xl p-6 shadow-sm">
+    <p class="text-gray-500 text-sm">Продажи</p>
+    <h2 class="text-3xl font-bold mt-2">{{ purchases_count }}</h2>
+  </div>
+
+  <div class="bg-white rounded-xl p-6 shadow-sm">
+    <p class="text-gray-500 text-sm">Доход</p>
+    <h2 class="text-3xl font-bold mt-2">{{ revenue|floatformat:2 }} ₽</h2>
+  </div>
+</section>
+
+<!-- Основные разделы -->
+<section>
+  <h2 class="text-xl font-semibold mb-4">Управление магазином</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <a
+      href="{% url 'users_list' %}"
+      class="block bg-white rounded-xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all"
+    >
+      <h3 class="text-lg font-semibold mb-2">Музыкальный каталог</h3>
+      <p class="text-gray-500 mb-4">Управление композициями магазина.</p>
+      <span class="text-blue-600 text-sm font-medium">Открыть каталог →</span>
+    </a>
+
+    <a
+      href="{% url 'users_list' %}"
+      class="block bg-white rounded-xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all"
+    >
+      <h3 class="text-lg font-semibold mb-2">Пользователи</h3>
+      <p class="text-gray-500 mb-4">
+        Просмотр и управление учетными записями пользователей.
+      </p>
+      <span class="text-blue-600 text-sm font-medium">Перейти к разделу →</span>
+    </a>
+
+    <a
+      href="{% url 'purchases_list' %}"
+      class="block bg-white rounded-xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all"
+    >
+      <h3 class="text-lg font-semibold mb-2">Покупки</h3>
+      <p class="text-gray-500 mb-4">Просмотр истории покупок пользователей.</p>
+      <span class="text-blue-600 text-sm font-medium">Перейти к разделу →</span>
+    </a>
+  </div>
+</section>
+
+<!-- Последние покупки -->
+<section class="mb-8">
+  <h2 class="text-xl font-semibold mb-4">Последние покупки</h2>
+
+  <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    {% for purchase in recent_purchases %}
+
+    <div class="flex items-center justify-between p-5 border-b border-gray-100">
+      <div>
+        <p class="font-semibold">{{ purchase.song.title }}</p>
+        <p class="text-sm text-gray-500">
+          Покупатель: {{ purchase.user.username }}
+        </p>
+      </div>
+
+      <div class="text-right">
+        <p class="font-medium">{{ purchase.song.price|floatformat:2 }} ₽</p>
+        <p class="text-sm text-gray-400">
+          {{ purchase.purchase_date|date:"d.m.Y H:i" }}
+        </p>
+      </div>
+    </div>
+
+    {% empty %}
+
+    <div class="p-6 text-center text-gray-500">Покупок пока нет</div>
+
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}
