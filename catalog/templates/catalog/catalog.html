@@ -70,7 +70,11 @@
         Редактировать
       </a>
 
-      <form method="POST" action="#">
+      <form
+        method="POST"
+        action="{% url 'delete_song' song.id %}"
+        onsubmit="return confirm('Вы действительно хотите удалить композицию «{{ song.title|escapejs }}»?');"
+      >
         {% csrf_token %}
 
         <button

@@ -1,6 +1,4 @@
 {% load static %}
-
-
 <!doctype html>
 <html lang="ru">
   <head>
@@ -9,78 +7,73 @@
     <title>{% block title %}SoundBound{% endblock %}</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{% static 'catalog/js/player.js' %}" defer></script>
   </head>
 
   <body class="bg-gray-100 min-h-screen">
-
     <!-- Шапка сайта -->
-    <header class="fixed top-0 left-0 right-0 h-20 z-50 bg-gray-900 text-white flex items-center">
-
+    <header
+      class="fixed top-0 left-0 right-0 h-20 z-50 bg-gray-900 text-white flex items-center"
+    >
       <!-- Логотип -->
       <div class="w-64 shrink-0 px-10">
         <a href="{% url 'catalog' %}" class="text-2xl font-bold">
-          SoundBound
+          Sound<span class="text-blue-500">Bound</span>
         </a>
       </div>
 
       <!-- Правая часть шапки -->
       <div class="flex-1 flex items-center justify-end px-8">
         <div class="flex items-center gap-5">
-
           {% if user.is_authenticated %}
 
-            <span class="text-gray-300">
-              Привет, {{ user.username }}!
-            </span>
+          <span class="text-gray-300"> Привет, {{ user.username }}! </span>
 
-            {% if user.is_staff %}
-              <a
-                href="{% url 'dashboard_home' %}"
-                class="text-blue-400 hover:text-blue-300"
-              >
-                Панель управления
-              </a>
-            {% endif %}
+          {% if user.is_staff %}
+          <a
+            href="{% url 'dashboard_home' %}"
+            class="text-blue-400 hover:text-blue-300"
+          >
+            Панель управления
+          </a>
+          {% endif %}
 
-            <form action="{% url 'accounts:logout' %}" method="POST">
-              {% csrf_token %}
-              <button type="submit" class="text-gray-300 hover:text-white">
-                Выйти
-              </button>
-            </form>
+          <form action="{% url 'accounts:logout' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="text-gray-300 hover:text-white">
+              Выйти
+            </button>
+          </form>
 
           {% else %}
 
-            <a href="{% url 'accounts:login' %}" class="hover:text-blue-300">
-              Войти
-            </a>
+          <a href="{% url 'accounts:login' %}" class="hover:text-blue-300">
+            Войти
+          </a>
 
-            <a
-              href="{% url 'accounts:register' %}"
-              class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg"
-            >
-              Регистрация
-            </a>
+          <a
+            href="{% url 'accounts:register' %}"
+            class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg"
+          >
+            Регистрация
+          </a>
 
           {% endif %}
-
         </div>
       </div>
-
     </header>
 
     <div class="flex">
-
       <!-- Боковое меню -->
-      <aside class="fixed left-0 top-20 bottom-0 w-64 bg-gray-900 text-white p-6 shadow-lg overflow-y-auto">
-
+      <aside
+        class="fixed left-0 top-20 bottom-0 w-64 bg-gray-900 text-white p-6 shadow-lg overflow-y-auto"
+      >
         <!-- Навигация -->
         <p class="text-xs uppercase tracking-wider text-gray-500 px-4 mb-4">
           Навигация
         </p>
 
         <nav class="flex flex-col gap-3">
-
           <a
             href="{% url 'catalog' %}"
             class="rounded-lg px-4 py-3 transition {% if request.resolver_match.url_name == 'catalog' %} bg-blue-600 text-white {% else %} text-gray-300 hover:bg-gray-800 hover:text-white {% endif %}"
@@ -89,19 +82,17 @@
           </a>
 
           {% if user.is_authenticated %}
-            <a
-              href="{% url 'my_library' %}"
-              class="rounded-lg px-4 py-3 transition {% if request.resolver_match.url_name == 'my_library' %} bg-blue-600 text-white {% else %} text-gray-300 hover:bg-gray-800 hover:text-white {% endif %}"
-            >
-              Моя библиотека
-            </a>
+          <a
+            href="{% url 'my_library' %}"
+            class="rounded-lg px-4 py-3 transition {% if request.resolver_match.url_name == 'my_library' %} bg-blue-600 text-white {% else %} text-gray-300 hover:bg-gray-800 hover:text-white {% endif %}"
+          >
+            Моя библиотека
+          </a>
           {% endif %}
-
         </nav>
 
         <!-- Поиск -->
         <div class="mt-10 pt-6 border-t border-gray-700">
-
           <p class="text-xs uppercase tracking-wider text-gray-500 px-4 mb-3">
             Поиск
           </p>
@@ -112,26 +103,22 @@
             placeholder="Название или исполнитель..."
             class="w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-500 rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           />
-
         </div>
-
       </aside>
 
       <!-- Основное содержимое страницы -->
       <main class="ml-64 mt-20 flex-1 px-6 py-10 pb-40">
         {% block content %} {% endblock %}
       </main>
-
     </div>
 
     <!-- Нижний аудиоплеер -->
-    <footer class="fixed bottom-0 left-0 w-full bg-gray-900 text-white shadow-lg border-t border-gray-700 px-6 py-4 z-50">
-
+    <footer
+      class="fixed bottom-0 left-0 w-full bg-gray-900 text-white shadow-lg border-t border-gray-700 px-6 py-4 z-50"
+    >
       <div class="max-w-7xl mx-auto flex items-center gap-6">
-
         <!-- Название композиции -->
         <div class="min-w-0 flex-1">
-
           <p id="player-title" class="font-semibold truncate">
             Ничего не воспроизводится
           </p>
@@ -139,14 +126,11 @@
           <p id="player-artist" class="text-sm text-gray-400 truncate">
             Выбери композицию
           </p>
-
         </div>
 
         <!-- Управление воспроизведением -->
         <div class="flex flex-col items-center flex-1 gap-2">
-
           <div class="flex items-center gap-5">
-
             <button
               onclick="skipBackward()"
               class="hover:text-blue-400"
@@ -171,12 +155,10 @@
             >
               10 ↷
             </button>
-
           </div>
 
           <!-- Прогресс воспроизведения -->
           <div class="flex items-center gap-3 w-full text-xs text-gray-400">
-
             <span id="current-time">0:00</span>
 
             <input
@@ -189,146 +171,11 @@
             />
 
             <span id="duration">0:00</span>
-
           </div>
-
         </div>
 
         <audio id="audio-player"></audio>
-
       </div>
-
     </footer>
-
-  </body>
-</html>
-
-
-    <!-- JavaScript -->
-    <script>
-      const audioPlayer = document.getElementById("audio-player");
-      const playButton = document.getElementById("play-button");
-
-      const playerTitle = document.getElementById("player-title");
-      const playerArtist = document.getElementById("player-artist");
-
-      const progressBar = document.getElementById("progress-bar");
-      const currentTime = document.getElementById("current-time");
-      const duration = document.getElementById("duration");
-
-      // Перевод секунд в формат минуты:секунды
-      function formatTime(seconds) {
-        if (!Number.isFinite(seconds)) {
-          return "0:00";
-        }
-
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = Math.floor(seconds % 60);
-
-        return `${minutes}:${String(remainingSeconds).padStart(2, "0")}`;
-      }
-
-      // Запуск выбранной композиции
-      function playSong(element) {
-        audioPlayer.src = element.dataset.audio;
-
-        playerTitle.textContent = element.dataset.title;
-        playerArtist.textContent = element.dataset.artist;
-
-        progressBar.value = 0;
-        currentTime.textContent = "0:00";
-        duration.textContent = "0:00";
-
-        audioPlayer.play().catch((error) => {
-          console.error("Ошибка воспроизведения:", error);
-        });
-      }
-
-      // Воспроизведение и пауза
-      function togglePlay() {
-        if (!audioPlayer.src) {
-          return;
-        }
-
-        if (audioPlayer.paused) {
-          audioPlayer.play();
-        } else {
-          audioPlayer.pause();
-        }
-      }
-
-      // Перемотка назад на 10 секунд
-      function skipBackward() {
-        if (!audioPlayer.src) {
-          return;
-        }
-
-        audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime - 10);
-      }
-
-      // Перемотка вперёд на 10 секунд
-      function skipForward() {
-        if (!audioPlayer.src) {
-          return;
-        }
-
-        audioPlayer.currentTime = Math.min(
-          audioPlayer.duration || audioPlayer.currentTime + 10,
-          audioPlayer.currentTime + 10,
-        );
-      }
-
-      // Изменение значка при воспроизведении
-      audioPlayer.addEventListener("play", () => {
-        playButton.textContent = "Ⅱ";
-      });
-
-      audioPlayer.addEventListener("pause", () => {
-        playButton.textContent = "▶";
-      });
-
-      // Получение длительности композиции
-      audioPlayer.addEventListener("loadedmetadata", () => {
-        duration.textContent = formatTime(audioPlayer.duration);
-      });
-
-      // Обновление времени и полосы прогресса
-      audioPlayer.addEventListener("timeupdate", () => {
-        currentTime.textContent = formatTime(audioPlayer.currentTime);
-
-        if (Number.isFinite(audioPlayer.duration)) {
-          progressBar.value =
-            (audioPlayer.currentTime / audioPlayer.duration) * 100;
-        }
-      });
-
-      // Перемотка при перемещении ползунка
-      progressBar.addEventListener("input", () => {
-        if (Number.isFinite(audioPlayer.duration)) {
-          audioPlayer.currentTime =
-            (progressBar.value / 100) * audioPlayer.duration;
-        }
-      });
-
-      // Поиск композиций в каталоге
-      const searchInput = document.getElementById("song-search");
-
-      if (searchInput) {
-        searchInput.addEventListener("input", function () {
-          const searchValue = this.value.toLowerCase().trim();
-
-          document.querySelectorAll(".song-card").forEach((card) => {
-            const title = card.dataset.title.toLowerCase();
-            const artist = card.dataset.artist.toLowerCase();
-
-            if (title.includes(searchValue) || artist.includes(searchValue)) {
-              card.style.display = "";
-            } else {
-              card.style.display = "none";
-            }
-          });
-        });
-      }
-    </script>
   </body>
 </html>

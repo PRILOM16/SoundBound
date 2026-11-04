@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.db.models import Sum
+
+from catalog.forms import SongForm
 
 
 from catalog.models import Song
@@ -119,3 +120,18 @@ def purchases_list(request):
     }
 
     return render(request, 'dashboard/purchases.html', context)
+
+@staff_member_required
+def add_song(request):
+    if request.method == 'POST':
+        form = SongForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard_home')
+    else:
+        form = SongForm()
+
+    return render(request, 'dashboard/add_song.html', {
+        'form': form
+    })

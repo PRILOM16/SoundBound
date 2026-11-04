@@ -2,6 +2,9 @@ from django.shortcuts import render
 from .models import Song
 from billing.models import Purchase
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils import timezone
 
 def song_catalog(request):
     songs = Song.objects.filter(deleted_at__isnull=True)
@@ -21,4 +24,13 @@ def my_library(request):
     return render(request, 'catalog/library.html', {
         'purchases': purchases
     })
+
+@staff_member_required
+def delete_song(request, song_id):
+    if request.method == 'POST':
+        song = get_object_or_404(Song, id=song_id, deleted_at__isnull=True)
+        song.deleted_at = timezone.now().date()
+        song.save()
+
+    return redirect('catalog')
 

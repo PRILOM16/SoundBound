@@ -16,4 +16,5 @@ urlpatterns = [
         name='toggle_user_role'
     ),
     path('purchases/', views.purchases_list, name='purchases_list'),
+    path('songs/add/', views.add_song, name='add_song'),
 ]
