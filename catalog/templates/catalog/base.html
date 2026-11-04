@@ -8,6 +8,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="{% static 'catalog/js/player.js' %}" defer></script>
+    <script src="{% static 'catalog/js/volume.js' %}" defer></script>
   </head>
 
   <body class="bg-gray-100 min-h-screen">
@@ -172,6 +173,32 @@
 
             <span id="duration">0:00</span>
           </div>
+        </div>
+
+        <!-- Регулировка громкости -->
+        <div class="flex items-center gap-3 w-40">
+          <button
+            id="mute-button"
+            type="button"
+            class="text-xl hover:text-blue-400 transition"
+            title="Выключить звук"
+          >
+            🔊
+          </button>
+
+          <input
+            type="range"
+            id="volume-slider"
+            min="0"
+            max="100"
+            value="50"
+            class="w-full cursor-pointer accent-blue-500"
+            title="Громкость"
+          />
+
+          <span id="volume-value" class="text-xs text-gray-400 w-9 text-right">
+            50%
+          </span>
         </div>
 
         <audio id="audio-player"></audio>
